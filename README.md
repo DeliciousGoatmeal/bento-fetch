@@ -1,11 +1,9 @@
-Gemini said
-This README is designed to look as sharp as your terminal. I've added rich Markdown formatting, status badges, and clear visual hierarchy to help your project stand out on GitHub.
+![Alt text](images/screenshot.png)
 
-README.md
+
 <p align="center">🍱 bento-fetch</p>
 <p align="center">
 <img src="https://img.shields.io/badge/Language-Rust-orange.svg" alt="Language">
-<img src="https://img.shields.io/badge/Speed-%3C%2025ms-brightgreen.svg" alt="Speed">
 <img src="https://img.shields.io/badge/Platform-Linux%20%7C%20macOS-blue.svg" alt="Platform">
 <img src="https://img.shields.io/badge/Style-Modern%20Bento-magenta.svg" alt="Style">
 </p>
