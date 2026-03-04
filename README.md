@@ -1,4 +1,4 @@
-![Alt text](images/screenshot.png)
+![Alt text](pictures/Screenshot from 2026-03-03 22-26-06.png)
 
 
 <p align="center">🍱 bento-fetch</p>
