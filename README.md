@@ -44,11 +44,6 @@ Bash
 git clone https://github.com/yourusername/bento-fetch.git
 cd bento-fetch
 
-# Download the ASCII library (optional if folder exists)
-git clone --depth 1 https://github.com/fastfetch-cli/fastfetch.git temp_repo
-mv temp_repo/src/logo/ascii ./
-rm -rf temp_repo
-
 # Build for maximum performance
 cargo build --release
 
