@@ -65,3 +65,52 @@ Ensure you have the PCI hardware database installed (usually standard):
 ```bash
 sudo pacman -S hwdata  # Arch/CachyOS
 sudo apt install pciutils # Debian/Ubuntu
+🪟 Windows Specifics
+Before installing Rust, you must install the Microsoft Visual Studio C++ Build Tools.
+
+Download the Visual Studio Installer.
+
+Select the "Desktop development with C++" workload.
+
+Install and restart your terminal.
+
+🚀 Building from Source
+Bash
+# 1. Clone the repository
+git clone [https://github.com/yourusername/bento-fetch.git](https://github.com/yourusername/bento-fetch.git)
+cd bento-fetch
+
+# 2. Download the ASCII library (if not already present)
+git clone --depth 1 [https://github.com/fastfetch-cli/fastfetch.git](https://github.com/fastfetch-cli/fastfetch.git) temp_repo
+mv temp_repo/src/logo/ascii ./
+rm -rf temp_repo
+
+# 3. Build the heavily optimized binary
+cargo build --release
+To Install Globally:
+
+Linux: sudo cp target/release/bento-fetch /usr/local/bin/
+
+Windows: Move target\release\bento-fetch.exe to a permanent folder and add it to your System PATH, or call the absolute path in your PowerShell profile.
+
+🖥️ Shell Integration
+bento-fetch is designed to work out of the box with zero configuration files. Add it to your shell startup to see it every time you open a terminal!
+
+Linux (Fish):
+
+Code snippet
+# ~/.config/fish/config.fish
+function fish_greeting
+    bento-fetch
+end
+Windows (PowerShell):
+
+PowerShell
+# Open profile with: notepad $PROFILE
+# Add these lines:
+[console]::OutputEncoding = [System.Text.Encoding]::UTF8
+& "C:\path\to\your\bento-fetch.exe"
+(Note: If Windows Defender slows down your boot time, add your bento-fetch.exe path to your Defender exclusions list).
+
+📄 License
+This project is licensed under the MIT License.
