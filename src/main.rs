@@ -15,7 +15,28 @@ use sysinfo::{Disks, System};
 include!(concat!(env!("OUT_DIR"), "/logos.rs"));
 
 fn get_usage_color(pct: f64) -> Color {
-    if pct >= 85.0 { Color::Red } else if pct >= 60.0 { Color::Yellow } else { Color::Green }
+    if pct >= 85.0 {
+        return Color::Red;
+    } else if pct >= 60.0 {
+        return Color::Yellow;
+    } else {
+        return Color::Green;
+    }
+}
+
+// Helper function to format uptime beautifully
+fn format_uptime(total_seconds: u64) -> String {
+    let days = total_seconds / 86400;
+    let hours = (total_seconds % 86400) / 3600;
+    let minutes = (total_seconds % 3600) / 60;
+
+    if days > 0 {
+        format!("{}d {}h {}m", days, hours, minutes)
+    } else if hours > 0 {
+        format!("{}h {}m", hours, minutes)
+    } else {
+        format!("{} mins", minutes)
+    }
 }
 
 // ==========================================
@@ -70,7 +91,6 @@ fn get_gpu_data() -> (String, String, f64) {
                     util_pct = u;
                     util_str = format!("{}%", u);
                 }
-                // Short-circuit and return immediately if Nvidia succeeds!
                 if name.len() > 14 { name = name.chars().take(14).collect(); }
                 return (name, util_str, util_pct);
             }
@@ -80,7 +100,7 @@ fn get_gpu_data() -> (String, String, f64) {
     // 2. Fallback to WMIC (Scrubbing nasty UTF-16 null bytes)
     if let Ok(output) = Command::new("wmic").args(["path", "win32_VideoController", "get", "name"]).output() {
         let stdout = String::from_utf8_lossy(&output.stdout);
-        let clean_out = stdout.replace('\x00', ""); // Strip the invisible bytes!
+        let clean_out = stdout.replace('\x00', "");
         for line in clean_out.lines() {
             let trimmed = line.trim();
             if !trimmed.is_empty() && !trimmed.eq_ignore_ascii_case("name") {
@@ -107,7 +127,7 @@ fn main() -> std::io::Result<()> {
     let gpu_thread = thread::spawn(|| get_gpu_data());
     let ip_thread = thread::spawn(|| local_ip().map_or("Offline".to_string(), |ip| ip.to_string()));
 
-    let mut sys = System::new_all(); // Ensure all CPU metrics are loaded
+    let mut sys = System::new_all(); 
     sys.refresh_memory();
     sys.refresh_cpu_usage();
     // Tiny sleep trick required on Windows to give the CPU time to calculate a usage delta
@@ -125,28 +145,24 @@ fn main() -> std::io::Result<()> {
 
     let ram_p = (sys.used_memory() as f64 / sys.total_memory() as f64) * 100.0;
     
-    // Get GLOBAL CPU utilization, not just core 0
     let global_cpu_p = sys.global_cpu_info().cpu_usage() as f64;
     let cpu_name = sys.cpus().first().map_or("Unknown CPU", |c| c.name());
     
     let ram = format!("{:.1}/{:.1} GB", sys.used_memory() as f64 / 1.073e9, sys.total_memory() as f64 / 1.073e9);
-    let uptime = format!("{} hrs", System::uptime() / 3600);
+    let uptime = format_uptime(System::uptime());
     let os = System::name().unwrap_or_else(|| "Unknown OS".to_string());
     let user_host = format!("{} AT {}", whoami::username().to_uppercase(), whoami::fallible::hostname().unwrap_or_default().to_uppercase());
 
-    // Fix Kernel string for Windows
     let kernel = if cfg!(target_os = "windows") {
         format!("Build {}", System::kernel_version().unwrap_or_default())
     } else {
         System::kernel_version().unwrap_or_default()
     };
 
-    // Cross-Platform Shell/Term Detection
     let shell = env::var("SHELL").or_else(|_| env::var("COMSPEC")).unwrap_or_default();
     let shell_clean = shell.split(&['/', '\\'][..]).last().unwrap_or("Unknown").replace(".exe", "");
     let term = env::var("TERM").unwrap_or_else(|_| if cfg!(target_os = "windows") { "Win Console".to_string() } else { "Unknown".to_string() });
 
-    // Dynamic Load Box (LOAD for Linux, CPU% for Windows)
     #[cfg(target_os = "windows")]
     let (load_title, load_val) = ("󰏗 CPU%", format!("{:.1}%", global_cpu_p));
     
@@ -188,14 +204,14 @@ fn main() -> std::io::Result<()> {
         f.render_widget(Paragraph::new(logo).cyan(), rows[1]);
         
         f.render_widget(d_b(" CPU", cpu_name, get_usage_color(global_cpu_p)), t_cols[0]);
-        f.render_widget(d_b(load_title, &load_val, Color::Blue), t_cols[1]); // Dynamic Box!
+        f.render_widget(d_b(load_title, &load_val, Color::Blue), t_cols[1]); 
         f.render_widget(d_b("󰘚 RAM", &ram, get_usage_color(ram_p)), t_cols[2]);
         f.render_widget(d_b("󰢮 GPU", &g_n, Color::Cyan), t_cols[3]);
         f.render_widget(d_b("󰢮 GPU%", &g_u, get_usage_color(g_p)), t_cols[4]);
         f.render_widget(d_b("󰋊 DISK", &disk_str, get_usage_color(disk_p)), t_cols[5]);
 
         f.render_widget(d_b("󰍹 OS", &os, Color::Blue), b_cols[0]);
-        f.render_widget(d_b(" KERNEL", &kernel, Color::Magenta), b_cols[1]); // Formatted Build Number
+        f.render_widget(d_b(" KERNEL", &kernel, Color::Magenta), b_cols[1]); 
         f.render_widget(d_b("󰔟 UPTIME", &uptime, Color::Green), b_cols[2]);
         f.render_widget(d_b(" SHELL", &shell_clean, Color::Green), b_cols[3]);
         f.render_widget(d_b(" TERM", &term, Color::Cyan), b_cols[4]);

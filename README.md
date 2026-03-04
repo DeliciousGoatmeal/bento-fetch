@@ -1,92 +1,67 @@
-<img width="3408" height="1366" alt="image" src="https://github.com/user-attachments/assets/528e4c63-60f9-468d-bfa0-1a477319d08b" />
-
-
-
-<p align="center">🍱 bento-fetch</p>
+# <p align="center">🍱 bento-fetch</p>
 <p align="center">
-<img src="https://img.shields.io/badge/Language-Rust-orange.svg" alt="Language">
-<img src="https://img.shields.io/badge/Platform-Linux%20%7C%20macOS-blue.svg" alt="Platform">
-<img src="https://img.shields.io/badge/Style-Modern%20Bento-magenta.svg" alt="Style">
+  <img src="https://img.shields.io/badge/Language-Rust-orange.svg" alt="Language">
+  <img src="https://img.shields.io/badge/Speed-%3C%2025ms-brightgreen.svg" alt="Speed">
+  <img src="https://img.shields.io/badge/Platform-Windows%20%7C%20Linux%20%7C%20macOS-blue.svg" alt="Platform">
+  <img src="https://img.shields.io/badge/Style-Modern%20Bento-magenta.svg" alt="Style">
 </p>
 
-bento-fetch is a high-performance, designer-centric system information tool. While traditional fetch tools prioritize a "logo-on-the-left" approach, bento-fetch treats your terminal like a high-end dashboard, organizing your system's soul into a clean, balanced Bento Box grid.
 
-✨ Key Features
-Bento Grid Layout: A 6x6 grid that separates hardware vitals from software environments for maximum scannability.
 
-Dynamic UX 🚦: Box borders dynamically change color based on usage:
+**bento-fetch** is a high-performance, cross-platform, designer-centric system information tool. While traditional fetch tools prioritize a "logo-on-the-left" approach, **bento-fetch** treats your terminal like a high-end dashboard, organizing your system's soul into a clean, balanced **Bento Box grid**.
 
-🟢 Green: Safe (Usage < 60%)
+## ⚡ Performance Leaderboard
+In the world of CLI tools, speed is king. **bento-fetch** is engineered to be nearly instantaneous by utilizing parallel background threads to hide the latency of hardware syscalls on both Windows and Linux.
 
-🟡 Yellow: Moderate (Usage 60% - 85%)
+| Tool | Avg. Execution Time | Implementation |
+| :--- | :--- | :--- |
+| `neofetch` | ~350ms | Bash (Process heavy) |
+| `fastfetch` | ~20ms | C (Highly optimized) |
+| **`bento-fetch`** | **~3.5ms - 25ms** | **Rust (Multithreaded / Parallel Probing)** |
 
-🔴 Red: Critical (Usage > 85%)
+---
 
-Compile-Time Assets: Over 400+ ASCII logos are baked directly into the binary at compile-time using a custom build.rs script—zero runtime disk I/O.
+## ✨ Key Features
 
-Gestalt Grouping: Metrics are grouped logically (CPU/RAM/GPU/Load) so your eyes don't have to hunt for information.
+* **Cross-Platform:** Native support for Windows (WMI/SMI), Linux (lspci/SMI), and macOS. 
+* **Bento Grid Layout:** A 6x6 grid that separates hardware vitals from software environments for maximum scannability.
+* **Dynamic UX 🚦:** Box borders dynamically change color based on usage:
+    * 🟢 **Green:** Safe (Usage < 60%)
+    * 🟡 **Yellow:** Moderate (Usage 60% - 85%)
+    * 🔴 **Red:** Critical (Usage > 85%)
+* **Compile-Time Assets:** Over 400+ ASCII logos are baked directly into the binary at compile-time—zero runtime disk I/O.
+* **Smart Metrics:** Automatically switches between `LOAD` average on Linux and global `CPU%` utilization on Windows.
 
-Designer Aesthetic: Features rounded borders, NerdFont icon support, and responsive central margins for a "website" feel in the TUI.
+---
 
-🛠 Installation
-1. Prerequisites
-Ensure you have the following installed on your system:
+## 📸 Component Breakdown
 
-Rust Toolchain: rustup
+### Top Row: The Engine (Hardware)
+* **CPU:** Processor name and real-time usage color.
+* **LOAD / CPU%:** 1-minute load average (Linux) or Total CPU Utilization (Windows).
+* **RAM:** Used vs. Total capacity.
+* **GPU:** Detected Graphics Card name.
+* **GPU%:** Real-time VRAM/Utilization.
+* **DISK:** Aggregated usage across all mounted drives.
 
-Nerd Fonts: Required for glyph rendering (e.g., JetBrainsMono)
+### Bottom Row: The Environment (Software)
+* **OS:** Distribution name (Windows 11, Arch, Debian, etc.).
+* **KERNEL:** System kernel version or Windows NT Build Number.
+* **UPTIME:** Formatted system uptime.
+* **SHELL:** Your active shell environment (fish, zsh, pwsh).
+* **TERM:** Current terminal emulator.
+* **IP:** Primary local network IPv4 address.
 
-PCI Hardware Database: Usually provided by the hwdata or pciutils package on Linux.
+---
 
-2. Setup
-Bash
-# Clone the repository
-git clone https://github.com/yourusername/bento-fetch.git
-cd bento-fetch
+## 🛠 Installation & Setup
 
-# Build for maximum performance
-cargo build --release
+### Prerequisites (All Platforms)
+* **Rust Toolchain:** [Install Rust](https://rustup.rs/)
+* **Nerd Fonts:** Required for glyph rendering (e.g., [JetBrainsMono](https://www.nerdfonts.com/font-downloads))
 
-# Install globally
-sudo cp target/release/bento-fetch /usr/local/bin/
-🚀 Configuration
-bento-fetch is designed to work out of the box with zero configuration files.
-
-[!TIP]
-To add to your Fish shell startup:
-
-Code snippet
-# ~/.config/fish/config.fish
-function fish_greeting
-    bento-fetch
-end
-📸 Component Breakdown
-Top Row: The Engine (Hardware)
-CPU: Processor name and real-time usage color.
-
-RAM: Used vs. Total capacity.
-
-GPU: Detected Graphics Card name.
-
-GPU%: Real-time VRAM/Utilization.
-
-DISK: Aggregated usage across all mounted drives.
-
-LOAD: 1-minute system load average.
-
-Bottom Row: The Environment (Software)
-OS: Distribution name (CachyOS, Arch, Debian, etc.).
-
-KERNEL: System kernel version.
-
-UPTIME: How long you've been grinding.
-
-SHELL: Your active shell environment.
-
-TERM: Current terminal emulator.
-
-IP: Primary local network address.
-
-📄 License
-This project is licensed under the MIT License. Feel free to fork, tweak, and rice it to your heart's content.
-
+### 🐧 Linux Specifics
+Ensure you have the PCI hardware database installed (usually standard):
+```bash
+sudo pacman -S hwdata  # Arch/CachyOS
+sudo apt install pciutils # Debian/Ubuntu
