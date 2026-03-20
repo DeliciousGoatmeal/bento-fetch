@@ -97,14 +97,23 @@ fn get_gpu_data() -> (String, String, f64) {
         }
     }
 
-    // 2. Fallback to WMIC (Scrubbing nasty UTF-16 null bytes)
-    if let Ok(output) = Command::new("wmic").args(["path", "win32_VideoController", "get", "name"]).output() {
+    // 2. Fallback to PowerShell (Modern replacement for deprecated WMIC)
+    if let Ok(output) = Command::new("powershell")
+        .args([
+            "-NoProfile",
+            "-Command",
+            "Get-CimInstance Win32_VideoController | Select-Object -ExpandProperty Name",
+        ])
+        .output()
+    {
         let stdout = String::from_utf8_lossy(&output.stdout);
-        let clean_out = stdout.replace('\x00', "");
-        for line in clean_out.lines() {
+        for line in stdout.lines() {
             let trimmed = line.trim();
-            if !trimmed.is_empty() && !trimmed.eq_ignore_ascii_case("name") {
-                name = trimmed.replace("AMD Radeon ", "").replace("Intel(R) ", "").to_string();
+            if !trimmed.is_empty() {
+                name = trimmed
+                    .replace("AMD Radeon ", "")
+                    .replace("Intel(R) ", "")
+                    .to_string();
                 break;
             }
         }
